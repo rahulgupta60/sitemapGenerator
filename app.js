@@ -12,8 +12,10 @@ const app = http.createServer((req, res) => {
     })
     req.on('end', () => {
       const { url } = JSON.parse(string)
+      console.log('TCL: url', url);
 
       const fileName = sitemapGenerator(url);
+      console.log('TCL: fileName', fileName);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ 'response': url }));
     })

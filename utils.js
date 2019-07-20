@@ -77,7 +77,6 @@
 // }
 
 module.exports.sitemapGenerator = (url) => {
-  console.log('TCL: module.exports.sitemapGenerator -> url', url);
   // const fileName = `${uniqueId}.json`
   // fs.writeFile(fileName, data, function (err) {
   //   if (err) { throw `error:${err}` }
