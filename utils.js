@@ -76,7 +76,7 @@
 //   });
 // }
 
-module.exports.sitemapGenrater = (url) => {
+module.exports.sitemapGenerator = (url) => {
   // const fileName = `${uniqueId}.json`
   // fs.writeFile(fileName, data, function (err) {
   //   if (err) { throw `error:${err}` }
