@@ -13,7 +13,7 @@ const app = http.createServer((req, res) => {
     req.on('end', () => {
       const { url } = JSON.parse(string)
 
-      const fileName = sitemapGenrater(url);
+      const fileName = sitemapGenerator(url);
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ 'response': url }));
     })
