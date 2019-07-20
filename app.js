@@ -3,6 +3,7 @@ const fs = require('fs');
 
 const { sitemapGenerator } = require('./utils')
 const port = 3000 || process.env.port;
+console.log('TCL: process.env.port;', process.env.port);
 
 const app = http.createServer((req, res) => {
   if (req.method == 'POST') {
@@ -11,6 +12,7 @@ const app = http.createServer((req, res) => {
       string += chunk.toString()
     })
     req.on('end', () => {
+      console.log('TCL: string', string);
       const { url } = JSON.parse(string)
       console.log('TCL: url', url);
 
@@ -22,7 +24,7 @@ const app = http.createServer((req, res) => {
   }
 })
 
-const server = app.listen(process.env.PORT || port, function () {
+const server = app.listen(process.env.PORT, function () {
   console.log("API listen at port 3000");
 });
 
