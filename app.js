@@ -20,7 +20,7 @@ const app = http.createServer((req, res) => {
   }
 })
 
-const server = app.listen(port, function () {
+const server = app.listen(process.env.PORT || port, function () {
   console.log("API listen at port 3000");
 });
 
