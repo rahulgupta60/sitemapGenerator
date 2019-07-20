@@ -2,85 +2,83 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const START_URL = 'https://wiprodigital.com/';
-// const START_URL = 'http://127.0.0.1:5500/'
-const MAX_PAGES_TO_VISIT = 10;
-
-// module.exports.sitemapGenerator = START_URL => {};
-
+// const MAX_PAGES_TO_VISIT = 10;
+const MAX_PAGES_TO_VISIT = 2;
 class SiteMapGenerator {
   constructor() {
     this.pagesVisited = {};
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
     this.finalResult = [];
+    // this.baseUrl = '';
+    this.baseUrl = 'https://wiprodigital.com';
   }
 
-  getData(START_URL) {
+  async getData(START_URL) {
     const url = new URL(START_URL);
-    this.baseUrl = url.protocol + '//' + url.hostname;
-    this.pagesToVisit.push(START_URL);
-
-    const x = this.crawl();
-    console.log('TCL: x', x);
-
-    return url;
+    // this.baseUrl = url.protocol + '//' + url.hostname;
+    // this.pagesToVisit.push(START_URL);
+    this.pagesToVisit.push(this.baseUrl);
+    return await this.crawl();
   }
 
-  crawl() {
+  async crawl() {
     if (this.numPagesVisited >= MAX_PAGES_TO_VISIT) {
       console.log('Reached max limit of number of pages to visit.');
-      console.log('finish', this.pagesVisited);
-      console.log('need to visit', this.pagesToVisit);
-      return this.pagesVisited;
+      return {
+        pagesVisited: this.pagesVisited,
+        pagesToVisit: this.pagesToVisit,
+      };
     }
-
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (!!nextPage) {
       if (nextPage in this.pagesVisited) {
-        // We've already visited this page, so repeat the crawl
-        crawl();
+        return await this.crawl();
       } else {
-        // New page we haven't visited
-        this.visitPage(nextPage, this.crawl);
+        return await this.visitPage(nextPage);
       }
     }
-    //  else {
-    //   console.log('finish', pagesVisited);
-    // }
-    return this.pagesVisited;
+    return { pagesVisited: this.pagesVisited, pagesToVisit: this.pagesToVisit };
   }
 
-  visitPage(url, callback) {
-    console.log('TCL: visitPage -> url', url);
-    // Add page to our set
+  async visitPage(url) {
     this.pagesVisited[url] = true;
     this.numPagesVisited++;
 
     // Make the request
     console.log('Visiting page ' + url);
-    request(url, (error, response, body) => {
-      // Check status code (200 is HTTP OK)
-      console.log('Status code: ' + response.statusCode);
-      if (response.statusCode !== 200) {
-        callback();
-        return;
-      }
-      // Parse the document body
-      const $ = cheerio.load(body);
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        // in addition to parsing the value, deal with possible errors
+        if (error) return reject(error);
+        try {
+          if (response.statusCode !== 200) {
+            resolve(this.crawl());
+          }
+          // Parse the document body
+          const $ = cheerio.load(body);
 
-      this.collectInternalLinks($);
-      // In this short program, our callback is just calling crawl()
-      callback();
+          this.collectInternalLinks($);
+          // In this short program, our callback is just calling crawl()
+
+          resolve(this.crawl());
+        } catch (e) {
+          reject(e);
+        }
+      });
     });
   }
 
   collectInternalLinks($) {
+    //firer for other domain
+    const pagesVisited = Object.entries(this.pagesVisited);
     const links = $('a');
-    console.log('Found ' + links.length + ' relative links on page');
     $(links).each((i, link) => {
       const url = new URL($(link).attr('href'));
-      this.pagesToVisit.push(this.baseUrl + url.pathname);
+      const newPagesToVisit = this.baseUrl + url.pathname;
+      !this.pagesToVisit.includes(newPagesToVisit) &&
+        !pagesVisited.includes(newPagesToVisit) &&
+        this.pagesToVisit.push(newPagesToVisit);
     });
   }
 }

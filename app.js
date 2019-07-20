@@ -11,14 +11,12 @@ const app = http.createServer((req, res) => {
       string += chunk.toString();
     });
     req.on('end', () => {
-      console.log('TCL: string', string);
       const { url } = JSON.parse(string);
 
-      // const fileName = sitemapGenerator(url);
-      siteMapGenerator.getData(url);
-      // console.log('TCL: fileName', fileName);
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ response: url }));
+      siteMapGenerator.getData(url).then(data => {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ data }));
+      });
     });
   }
 });
