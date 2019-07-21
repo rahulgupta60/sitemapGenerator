@@ -26,11 +26,14 @@ class SiteMapGenerator {
 
   response() {
     const visitedList = Object.keys(this.pagesVisited);
-    return {
+    const output = {
       siteMapResponse: [...visitedList, ...this.pagesToVisit],
       pagesVisited: this.pagesVisited,
       pagesToVisit: this.pagesToVisit,
     };
+    this.pagesVisited = {};
+    this.pagesToVisit = [];
+    return output;
   }
 
   async crawl() {
