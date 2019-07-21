@@ -6,36 +6,29 @@ const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 10;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 
 class SiteMapGenerator {
-  constructor() {
+  constructor(link) {
     this.pagesVisited = {};
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
     this.finalResult = [];
-    this.baseUrl = '';
-    console.log('numPagesVisited', this.numPagesVisited);
-    console.log('pagesVisited', this.pagesVisited);
+    const cleanUrl = this.stripTrailingSlash(link);
+    const url = new URL(cleanUrl);
+    this.baseUrl = url.protocol + '//' + url.hostname;
     // this.baseUrl = 'http://localhost:5500/';
   }
 
   async getData(START_URL) {
-    const cleanUrl = this.stripTrailingSlash(START_URL);
-    const url = new URL(cleanUrl);
-    this.baseUrl = url.protocol + '//' + url.hostname;
-    this.pagesToVisit.push(cleanUrl);
-
+    this.pagesToVisit.push(this.baseUrl);
     return await this.crawl();
   }
 
   response() {
     const visitedList = Object.keys(this.pagesVisited);
-    const output = {
+    return {
       siteMapResponse: [...visitedList, ...this.pagesToVisit],
       pagesVisited: this.pagesVisited,
       pagesToVisit: this.pagesToVisit,
     };
-    // this.pagesVisited = {};
-    // this.pagesToVisit = [];
-    return output;
   }
 
   async crawl() {
@@ -111,4 +104,4 @@ class SiteMapGenerator {
   }
 }
 
-module.exports = new SiteMapGenerator();
+module.exports = SiteMapGenerator;
