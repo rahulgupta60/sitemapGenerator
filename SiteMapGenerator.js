@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const MAX_PAGES_TO_VISIT = 1;
+const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 1;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 
 class SiteMapGenerator {
