@@ -2,12 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const {
-  stripTrailingSlash,
-  protocolValidator,
-  hostnameValidator,
-  linkValidator,
-} = require('./utils');
+const { stripTrailingSlash, linkValidator } = require('./utils');
 
 const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 2;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
