@@ -39,7 +39,7 @@ class SiteMapGenerator {
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (!!nextPage) {
       if (nextPage in this.pagesVisited) {
-        await this.crawl();
+        this.crawl();
       } else {
         await this.visitPage(nextPage);
       }
