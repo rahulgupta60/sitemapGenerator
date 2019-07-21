@@ -39,9 +39,9 @@ class SiteMapGenerator {
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (!!nextPage) {
       if (nextPage in this.pagesVisited) {
-        return await this.crawl();
+        await this.crawl();
       } else {
-        return await this.visitPage(nextPage);
+        await this.visitPage(nextPage);
       }
     }
     return this.response();
@@ -52,14 +52,14 @@ class SiteMapGenerator {
     this.numPagesVisited++;
     return axios
       .get(url)
-      .then(response => {
+      .then(async response => {
         if (response.status !== 200) {
-          console.log('not 200');
-          return this.crawl();
+          // may be page not found but keep crawling
+          await this.crawl();
         }
         const $ = cheerio.load(response.data); // Parse the document body
         this.getPageLinks($);
-        return this.crawl();
+        await this.crawl();
       })
       .catch(function(error) {
         // handle error
