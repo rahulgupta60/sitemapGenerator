@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const MAX_PAGES_TO_VISIT = 30;
+const MAX_PAGES_TO_VISIT = 1;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 
 class SiteMapGenerator {
@@ -24,12 +24,18 @@ class SiteMapGenerator {
     return await this.crawl();
   }
 
+  response() {
+    const visitedList = Object.keys(this.pagesVisited);
+    return {
+      siteMapResponse: [...visitedList, ...this.pagesToVisit],
+      pagesVisited: this.pagesVisited,
+      pagesToVisit: this.pagesToVisit,
+    };
+  }
+
   async crawl() {
     if (this.numPagesVisited >= MAX_PAGES_TO_VISIT) {
-      return {
-        pagesVisited: this.pagesVisited,
-        pagesToVisit: this.pagesToVisit,
-      };
+      return this.response();
     }
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (!!nextPage) {
@@ -39,7 +45,7 @@ class SiteMapGenerator {
         return await this.visitPage(nextPage);
       }
     }
-    return { pagesVisited: this.pagesVisited, pagesToVisit: this.pagesToVisit };
+    return this.response();
   }
 
   async visitPage(url) {
@@ -74,7 +80,8 @@ class SiteMapGenerator {
 
   collectInternalLinks($) {
     //firer for other domain
-    const pagesVisited = Object.entries(this.pagesVisited);
+    const visitedList = Object.keys(this.pagesVisited);
+
     const links = $('a');
     $(links).each((i, link) => {
       const url = new URL($(link).attr('href'));
@@ -85,7 +92,7 @@ class SiteMapGenerator {
 
       flag &&
         !this.pagesToVisit.includes(newPagesToVisit) &&
-        !pagesVisited.includes(newPagesToVisit) &&
+        !visitedList.includes(newPagesToVisit) &&
         this.pagesToVisit.push(newPagesToVisit);
     });
   }
