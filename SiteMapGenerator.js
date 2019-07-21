@@ -1,4 +1,6 @@
 const url = require('url');
+const request = require('request');
+
 const cheerio = require('cheerio');
 const axios = require('axios');
 
@@ -47,28 +49,48 @@ class SiteMapGenerator {
     return this.response();
   }
 
+  // async visitPage(url) {
+  //   this.pagesVisited[url] = true; //making sure page is visited
+  //   this.numPagesVisited++;
+  //   return axios
+  //     .get(url)
+  //     .then(async response => {
+  //       console.log(' url', url);
+  //       console.log('response.status', response.status);
+  //       if (response.status !== 200) {
+  //         // may be page not found but keep crawling
+  //         await this.crawl();
+  //       }
+  //       const $ = cheerio.load(response.data); // Parse the document body
+  //       this.getPageLinks($);
+  //       await this.crawl();
+  //     })
+  //     .catch(async error => {
+  //       // may be page not found but keep crawling
+  //       console.log(error);
+  //       await this.crawl();
+  //     });
+  // }
   async visitPage(url) {
     this.pagesVisited[url] = true; //making sure page is visited
     this.numPagesVisited++;
-    try {
-      const response = await axios.get(url);
-      const $ = cheerio.load(response.data); // Parse the document body
-      this.getPageLinks($);
-    } catch (error) {
-      console.error(error);
-    }
-    await this.crawl();
 
-    // return axios
-    //   .get(url)
-    //   .then(async response => {
-    //     const $ = cheerio.load(response.data); // Parse the document body
-    //     this.getPageLinks($);
-    //   })
-    //   .catch(async error => {
-    //     // may be page not found but keep crawling
-    //     console.log(error);
-    //   }).finlay;
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        // in addition to parsing the value, deal with possible errors
+        if (error) return reject(error);
+        try {
+          if (response.statusCode !== 200) {
+            resolve(this.crawl());
+          }
+          const $ = cheerio.load(body); // Parse the document body
+          this.getInternalLinks($);
+          resolve(this.crawl());
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
   }
 
   getPageLinks($) {
