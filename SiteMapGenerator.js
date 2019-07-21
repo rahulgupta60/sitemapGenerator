@@ -78,11 +78,13 @@ class SiteMapGenerator {
       const newPagesToVisit =
         this.baseUrl + '/' + stripTrailingSlash(link.pathname);
 
-      const flag = linkValidator(link, this.baseUrl, NOT_ALLOWED_PROTOCOL);
-      // hostnameValidator(this.baseUrl, url) &&
-      //   protocolValidator(NOT_ALLOWED_PROTOCOL, url);
+      const linkValidatorFlag = linkValidator(
+        link,
+        this.baseUrl,
+        NOT_ALLOWED_PROTOCOL,
+      );
 
-      flag &&
+      linkValidatorFlag &&
         !this.pagesToVisit.includes(newPagesToVisit) &&
         !visitedList.includes(newPagesToVisit) &&
         this.pagesToVisit.push(newPagesToVisit);
