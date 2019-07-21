@@ -2,8 +2,9 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-// const MAX_PAGES_TO_VISIT = 10;
 const MAX_PAGES_TO_VISIT = 30;
+const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
+
 class SiteMapGenerator {
   constructor() {
     this.pagesVisited = {};
@@ -11,18 +12,15 @@ class SiteMapGenerator {
     this.pagesToVisit = [];
     this.finalResult = [];
     this.baseUrl = '';
-    // this.baseUrl = 'https://wiprodigital.com';
     // this.baseUrl = 'http://localhost:5500/';
   }
 
   async getData(START_URL) {
-    console.log('TCL: SiteMapGenerator -> getData -> START_URL', START_URL);
     const cleanUrl = this.stripTrailingSlash(START_URL);
-    // const cleanUrl = this.baseUrl;
-
     const url = new URL(cleanUrl);
     this.baseUrl = url.protocol + '//' + url.hostname;
     this.pagesToVisit.push(cleanUrl);
+
     return await this.crawl();
   }
 
@@ -45,14 +43,10 @@ class SiteMapGenerator {
   }
 
   async visitPage(url) {
-    this.pagesVisited[url] = true;
+    this.pagesVisited[url] = true; //making sure page is visited
     this.numPagesVisited++;
 
-    // Make the request
-
     return new Promise((resolve, reject) => {
-      console.log('TCL: SiteMapGenerator -> visitPage -> url', url);
-
       request(url, (error, response, body) => {
         // in addition to parsing the value, deal with possible errors
         if (error) return reject(error);
@@ -60,12 +54,8 @@ class SiteMapGenerator {
           if (response.statusCode !== 200) {
             resolve(this.crawl());
           }
-          // Parse the document body
-          const $ = cheerio.load(body);
-
+          const $ = cheerio.load(body); // Parse the document body
           this.collectInternalLinks($);
-          // In this short program, our callback is just calling crawl()
-
           resolve(this.crawl());
         } catch (e) {
           reject(e);
@@ -73,43 +63,39 @@ class SiteMapGenerator {
       });
     });
   }
+
   domainValidate({ hostname }) {
     // assuming it is relative link always true
     if (hostname) {
-      const x = this.baseUrl.search(hostname) > 0 ? true : false;
-
-      return x;
+      return this.baseUrl.search(hostname) > 0 ? true : false;
     }
     return true;
   }
-  stripTrailingSlash(str) {
-    return str.replace(/^\/|\/$/g, '');
-  }
-  filterOtherProtocaLL({ protocol }) {
-    console.log('protocol', protocol);
-    const x = !['mailto:', 'ftp:'].filter(x => x == protocol).length;
-    console.log('flag', x);
-    return x;
-  }
+
   collectInternalLinks($) {
     //firer for other domain
     const pagesVisited = Object.entries(this.pagesVisited);
     const links = $('a');
     $(links).each((i, link) => {
       const url = new URL($(link).attr('href'));
-      console.log('herf', $(link).attr('href'));
-
-      const flag = this.domainValidate(url) && this.filterOtherProtocaLL(url);
-
       const newPagesToVisit =
         this.baseUrl + '/' + this.stripTrailingSlash(url.pathname);
-      // console.log(' newPagesToVisit', newPagesToVisit);
+
+      const flag = this.domainValidate(url) && this.filterProtocol(url);
 
       flag &&
         !this.pagesToVisit.includes(newPagesToVisit) &&
         !pagesVisited.includes(newPagesToVisit) &&
         this.pagesToVisit.push(newPagesToVisit);
     });
+  }
+
+  stripTrailingSlash(url) {
+    return url.replace(/^\/|\/$/g, '');
+  }
+
+  filterProtocol({ protocol }) {
+    return !NOT_ALLOWED_PROTOCOL.filter(x => x == protocol).length;
   }
 }
 
