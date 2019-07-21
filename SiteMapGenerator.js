@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 1;
+const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 10;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 
 class SiteMapGenerator {
@@ -12,6 +12,8 @@ class SiteMapGenerator {
     this.pagesToVisit = [];
     this.finalResult = [];
     this.baseUrl = '';
+    console.log('numPagesVisited', this.numPagesVisited);
+    console.log('pagesVisited', this.pagesVisited);
     // this.baseUrl = 'http://localhost:5500/';
   }
 
