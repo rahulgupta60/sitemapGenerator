@@ -84,7 +84,7 @@ class SiteMapGenerator {
             resolve(this.crawl());
           }
           const $ = cheerio.load(body); // Parse the document body
-          this.getInternalLinks($);
+          this.getPageLinks($);
           resolve(this.crawl());
         } catch (e) {
           reject(e);
