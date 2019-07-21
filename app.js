@@ -21,8 +21,8 @@ const app = http.createServer((req, res) => {
   }
 });
 
-const server = app.listen(port, function() {
-  console.log(`API listen at port ${port}`);
+const server = app.listen(process.env.port, function() {
+  console.log(`API listen at port ${process.env.port}`);
 });
 
 module.exports = server;
