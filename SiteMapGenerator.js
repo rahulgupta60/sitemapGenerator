@@ -39,11 +39,16 @@ class SiteMapGenerator {
     }
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (!!nextPage) {
-      if (nextPage in this.pagesVisited) {
-        this.crawl();
-      } else {
-        await this.visitPage(nextPage);
-      }
+      // console.log('TCL: SiteMapGenerator -> crawl -> nextPage', nextPage);
+      // console.log(
+      //   'TCL: SiteMapGenerator -> crawl -> nextPage in this.pagesVisited',
+      //   nextPage in this.pagesVisited,
+      // );
+      // if (nextPage in this.pagesVisited) {
+      //   this.crawl();
+      // } else {
+      await this.visitPage(nextPage);
+      // }
     }
     return this.response();
   }
