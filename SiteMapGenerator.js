@@ -58,16 +58,16 @@ class SiteMapGenerator {
         console.log('response.status', response.status);
         if (response.status !== 200) {
           // may be page not found but keep crawling
-          await this.crawl();
+          return this.crawl();
         }
         const $ = cheerio.load(response.data); // Parse the document body
         this.getPageLinks($);
-        await this.crawl();
+        return this.crawl();
       })
       .catch(async error => {
         // may be page not found but keep crawling
         console.log(error);
-        await this.crawl();
+        return this.crawl();
       });
   }
 
