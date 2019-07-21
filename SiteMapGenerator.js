@@ -26,8 +26,9 @@ class SiteMapGenerator {
     const visitedList = Object.keys(this.pagesVisited);
     return {
       siteMapResponse: [...visitedList, ...this.pagesToVisit],
-      pagesVisited: this.pagesVisited,
-      pagesToVisit: this.pagesToVisit,
+      totalPageVisited: numPagesVisited,
+      totalPageVisitedList: this.pagesVisited,
+      pendingToVisitList: this.pagesToVisit,
     };
   }
 
