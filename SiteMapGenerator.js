@@ -1,10 +1,12 @@
+const url = require('url');
 const cheerio = require('cheerio');
 const axios = require('axios');
-const url = require('url');
+
 const { stripTrailingSlash, linkValidator } = require('./utils');
 
 const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 2;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
+
 class SiteMapGenerator {
   constructor(link) {
     this.pagesVisited = {};
@@ -15,9 +17,9 @@ class SiteMapGenerator {
     this.baseUrl = urlObject.protocol + '//' + urlObject.hostname;
   }
 
-  async get() {
+  get() {
     this.pagesToVisit.push(this.baseUrl);
-    return await this.crawl();
+    return this.crawl();
   }
 
   response() {
