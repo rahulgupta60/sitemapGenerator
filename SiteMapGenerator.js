@@ -74,7 +74,8 @@ class SiteMapGenerator {
     const links = $('a');
     $(links).each((i, value) => {
       const link = new URL($(value).attr('href'));
-      const newLink = this.baseUrl + '/' + stripTrailingSlash(link.pathname);
+      const cleanUrl = stripTrailingSlash(link.pathname);
+      const newLink = this.baseUrl + '/' + cleanUrl;
 
       const linkValidatorFlag = linkValidator(
         link,
@@ -82,6 +83,7 @@ class SiteMapGenerator {
         NOT_ALLOWED_PROTOCOL,
       );
 
+      cleanUrl && // if only slash contain url is fail
       linkValidatorFlag && // check link is proper
       !this.pagesToVisit.includes(newLink) && // check link is already is exist in pagesToVisit list
       !visitedList.includes(newLink) && // check link is already is exist in visitedList list
