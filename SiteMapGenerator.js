@@ -11,7 +11,6 @@ class SiteMapGenerator {
     this.pagesVisited = {};
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
-    this.finalResult = [];
     const cleanUrl = stripTrailingSlash(link);
     const url = new URL(cleanUrl);
     this.baseUrl = url.protocol + '//' + url.hostname;
@@ -26,7 +25,7 @@ class SiteMapGenerator {
     const visitedList = Object.keys(this.pagesVisited);
     return {
       siteMapResponse: [...visitedList, ...this.pagesToVisit],
-      totalPageVisited: numPagesVisited,
+      totalPageVisited: this.numPagesVisited,
       totalPageVisitedList: this.pagesVisited,
       pendingToVisitList: this.pagesToVisit,
     };
@@ -75,8 +74,7 @@ class SiteMapGenerator {
     const links = $('a');
     $(links).each((i, value) => {
       const link = new URL($(value).attr('href'));
-      const newPagesToVisit =
-        this.baseUrl + '/' + stripTrailingSlash(link.pathname);
+      const newLink = this.baseUrl + '/' + stripTrailingSlash(link.pathname);
 
       const linkValidatorFlag = linkValidator(
         link,
@@ -85,9 +83,9 @@ class SiteMapGenerator {
       );
 
       linkValidatorFlag && // check link is proper
-      !this.pagesToVisit.includes(newPagesToVisit) && // check link is already is exist in pagesToVisit list
-      !visitedList.includes(newPagesToVisit) && // check link is already is exist in newPagesToVisit list
-        this.pagesToVisit.push(newPagesToVisit); // finally push the data in pagesToVisit list
+      !this.pagesToVisit.includes(newLink) && // check link is already is exist in pagesToVisit list
+      !visitedList.includes(newLink) && // check link is already is exist in visitedList list
+        this.pagesToVisit.push(newLink); // finally push the data in pagesToVisit list
     });
   }
 }
