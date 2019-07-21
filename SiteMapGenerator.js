@@ -60,7 +60,7 @@ class SiteMapGenerator {
           return this.crawl();
         }
         const $ = cheerio.load(response.data); // Parse the document body
-        this.getPageLinksawait($);
+        this.getPageLinks($);
         return this.crawl();
       })
       .catch(async error => {
