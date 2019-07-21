@@ -65,8 +65,8 @@ class SiteMapGenerator {
       })
       .catch(async error => {
         // may be page not found but keep crawling
+        console.log(error);
         await this.crawl();
-        // console.log(error);
       });
   }
 
