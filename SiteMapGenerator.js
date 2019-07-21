@@ -69,7 +69,6 @@ class SiteMapGenerator {
   }
 
   collectInternalLinks($) {
-    //firer for other domain
     const visitedList = Object.keys(this.pagesVisited);
 
     const links = $('a');
@@ -84,10 +83,10 @@ class SiteMapGenerator {
         NOT_ALLOWED_PROTOCOL,
       );
 
-      linkValidatorFlag &&
-        !this.pagesToVisit.includes(newPagesToVisit) &&
-        !visitedList.includes(newPagesToVisit) &&
-        this.pagesToVisit.push(newPagesToVisit);
+      linkValidatorFlag && // check link is proper
+      !this.pagesToVisit.includes(newPagesToVisit) && // check link is already is exist in pagesToVisit list
+      !visitedList.includes(newPagesToVisit) && // check link is already is exist in newPagesToVisit list
+        this.pagesToVisit.push(newPagesToVisit); // finally push the data in pagesToVisit list
     });
   }
 }
