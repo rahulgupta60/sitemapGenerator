@@ -16,6 +16,7 @@ class SiteMapGenerator {
   }
 
   async getData(START_URL) {
+    console.log('TCL: SiteMapGenerator -> getData -> START_URL', START_URL);
     const cleanUrl = this.stripTrailingSlash(START_URL);
     // const cleanUrl = this.baseUrl;
 
@@ -51,6 +52,7 @@ class SiteMapGenerator {
 
     return new Promise((resolve, reject) => {
       console.log('TCL: SiteMapGenerator -> visitPage -> url', url);
+
       request(url, (error, response, body) => {
         // in addition to parsing the value, deal with possible errors
         if (error) return reject(error);
