@@ -1,7 +1,6 @@
 const cheerio = require('cheerio');
-// const URL = require('url-parse');
 const axios = require('axios');
-const rauhl = require('url');
+const url = require('url');
 const { stripTrailingSlash, linkValidator } = require('./utils');
 
 const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 2;
@@ -12,8 +11,8 @@ class SiteMapGenerator {
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
     const cleanUrl = stripTrailingSlash(link);
-    const url = rauhl.parse(cleanUrl);
-    this.baseUrl = url.protocol + '//' + url.hostname;
+    const urlObject = url.parse(cleanUrl);
+    this.baseUrl = urlObject.protocol + '//' + urlObject.hostname;
   }
 
   async get() {
@@ -71,14 +70,12 @@ class SiteMapGenerator {
 
     const links = $('a');
     $(links).each((i, value) => {
-      // const link = new URL($(value).attr('href'));
-
-      const link1 = rauhl.parse($(value).attr('href'), true);
-      const cleanUrl = stripTrailingSlash(link1.pathname);
+      const link = url.parse($(value).attr('href'), true);
+      const cleanUrl = stripTrailingSlash(link.pathname);
       const newLink = this.baseUrl + '/' + cleanUrl;
 
       const linkValidatorFlag = linkValidator(
-        link1,
+        link,
         this.baseUrl,
         NOT_ALLOWED_PROTOCOL,
       );
