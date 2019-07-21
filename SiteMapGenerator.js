@@ -71,7 +71,11 @@ class SiteMapGenerator {
     const links = $('a');
     $(links).each((i, value) => {
       const link = url.parse($(value).attr('href'), true);
-      const cleanUrl = stripTrailingSlash(link.pathname);
+
+      const cleanUrl = link.pathname
+        ? stripTrailingSlash(link.pathname)
+        : false;
+
       const newLink = this.baseUrl + '/' + cleanUrl;
 
       const linkValidatorFlag = linkValidator(
