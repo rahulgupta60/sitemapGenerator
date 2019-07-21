@@ -2,19 +2,24 @@ const request = require('request');
 const cheerio = require('cheerio');
 const URL = require('url-parse');
 
-const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 10;
-const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
+const {
+  stripTrailingSlash,
+  protocolValidator,
+  hostnameValidator,
+  linkValidator,
+} = require('./utils');
 
+const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 2;
+const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 class SiteMapGenerator {
   constructor(link) {
     this.pagesVisited = {};
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
     this.finalResult = [];
-    const cleanUrl = this.stripTrailingSlash(link);
+    const cleanUrl = stripTrailingSlash(link);
     const url = new URL(cleanUrl);
     this.baseUrl = url.protocol + '//' + url.hostname;
-    // this.baseUrl = 'http://localhost:5500/';
   }
 
   async getData(START_URL) {
@@ -68,39 +73,25 @@ class SiteMapGenerator {
     });
   }
 
-  domainValidate({ hostname }) {
-    // assuming it is relative link always true
-    if (hostname) {
-      return this.baseUrl.search(hostname) > 0 ? true : false;
-    }
-    return true;
-  }
-
   collectInternalLinks($) {
     //firer for other domain
     const visitedList = Object.keys(this.pagesVisited);
 
     const links = $('a');
-    $(links).each((i, link) => {
-      const url = new URL($(link).attr('href'));
+    $(links).each((i, value) => {
+      const link = new URL($(value).attr('href'));
       const newPagesToVisit =
-        this.baseUrl + '/' + this.stripTrailingSlash(url.pathname);
+        this.baseUrl + '/' + stripTrailingSlash(link.pathname);
 
-      const flag = this.domainValidate(url) && this.filterProtocol(url);
+      const flag = linkValidator(link, this.baseUrl, NOT_ALLOWED_PROTOCOL);
+      // hostnameValidator(this.baseUrl, url) &&
+      //   protocolValidator(NOT_ALLOWED_PROTOCOL, url);
 
       flag &&
         !this.pagesToVisit.includes(newPagesToVisit) &&
         !visitedList.includes(newPagesToVisit) &&
         this.pagesToVisit.push(newPagesToVisit);
     });
-  }
-
-  stripTrailingSlash(url) {
-    return url.replace(/^\/|\/$/g, '');
-  }
-
-  filterProtocol({ protocol }) {
-    return !NOT_ALLOWED_PROTOCOL.filter(x => x == protocol).length;
   }
 }
 
