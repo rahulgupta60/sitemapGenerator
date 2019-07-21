@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 
 const siteMapGenerator = require('./SiteMapGenerator');
-const port = process.env.port || 3000;
+const PORT = process.env.PORT || 5000;
 
 const app = http.createServer((req, res) => {
   if (req.method == 'POST') {
@@ -21,8 +21,8 @@ const app = http.createServer((req, res) => {
   }
 });
 
-const server = app.listen(process.env.port, function() {
-  console.log(`API listen at port ${process.env.port}`);
+const server = app.listen(PORT, function() {
+  console.log(`API listen at port ${PORT}`);
 });
 
 module.exports = server;
