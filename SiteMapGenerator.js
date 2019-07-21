@@ -53,6 +53,8 @@ class SiteMapGenerator {
     return axios
       .get(url)
       .then(async response => {
+        console.log(' url', url);
+        console.log('response.status', response.status);
         if (response.status !== 200) {
           // may be page not found but keep crawling
           await this.crawl();
