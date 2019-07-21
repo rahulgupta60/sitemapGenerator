@@ -13,7 +13,7 @@ const app = http.createServer((req, res) => {
     req.on('end', () => {
       const { url } = JSON.parse(string);
       const siteMap = new siteMapGenerator(url);
-      siteMap.getData().then(data => {
+      siteMap.get().then(data => {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ data }));
       });

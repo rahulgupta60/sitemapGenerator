@@ -17,7 +17,7 @@ class SiteMapGenerator {
     this.baseUrl = url.protocol + '//' + url.hostname;
   }
 
-  async getData(START_URL) {
+  async get() {
     this.pagesToVisit.push(this.baseUrl);
     return await this.crawl();
   }
