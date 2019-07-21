@@ -51,7 +51,7 @@ class SiteMapGenerator {
     this.pagesVisited[url] = true; //making sure page is visited
     this.numPagesVisited++;
 
-    axios
+    return axios
       .get(url)
       .then(async response => {
         console.log(' url', url);
