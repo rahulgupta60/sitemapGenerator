@@ -52,15 +52,20 @@ class SiteMapGenerator {
   async visitPage(url) {
     this.pagesVisited[url] = true; //making sure page is visited
     this.numPagesVisited++;
-    return axios.get(url).then(async response => {
-      if (response.status !== 200) {
-        // may be page not found but keep crawling
+    try {
+      return axios.get(url).then(async response => {
+        if (response.status !== 200) {
+          // may be page not found but keep crawling
+          return this.crawl();
+        }
+        const $ = cheerio.load(response.data); // Parse the document body
+        this.getPageLinks($);
         return this.crawl();
-      }
-      const $ = cheerio.load(response.data); // Parse the document body
-      this.getPageLinks($);
+      });
+    } catch (error) {
+      console.log('TCL: visitPage -> error', error);
       return this.crawl();
-    });
+    }
     // .catch(async error => {
     //   // may be page not found but keep crawling
     //   console.log(error);
