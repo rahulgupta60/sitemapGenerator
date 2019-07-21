@@ -60,7 +60,7 @@ class SiteMapGenerator {
             resolve(this.crawl());
           }
           const $ = cheerio.load(body); // Parse the document body
-          this.collectInternalLinks($);
+          this.getInternalLinks($);
           resolve(this.crawl());
         } catch (e) {
           reject(e);
@@ -69,7 +69,7 @@ class SiteMapGenerator {
     });
   }
 
-  collectInternalLinks($) {
+  getInternalLinks($) {
     const visitedList = Object.keys(this.pagesVisited);
 
     const links = $('a');
