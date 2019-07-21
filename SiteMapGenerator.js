@@ -57,7 +57,7 @@ class SiteMapGenerator {
     } catch (error) {
       console.error(error);
     }
-    this.crawl();
+    await this.crawl();
 
     // return axios
     //   .get(url)
