@@ -33,8 +33,8 @@ class SiteMapGenerator {
       pagesVisited: this.pagesVisited,
       pagesToVisit: this.pagesToVisit,
     };
-    this.pagesVisited = {};
-    this.pagesToVisit = [];
+    // this.pagesVisited = {};
+    // this.pagesToVisit = [];
     return output;
   }
 
