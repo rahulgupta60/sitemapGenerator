@@ -1,8 +1,7 @@
 const url = require('url');
-const request = require('request');
 
+const request = require('request');
 const cheerio = require('cheerio');
-const axios = require('axios');
 
 const { stripTrailingSlash, linkValidator } = require('./utils');
 
@@ -53,46 +52,23 @@ class SiteMapGenerator {
     this.pagesVisited[url] = true; //making sure page is visited
     this.numPagesVisited++;
 
-    try {
-      const response = await axios.get(url);
-      if (response.status !== 200) {
-        // may be page not found but keep crawling
-        return this.crawl();
-      }
-      const $ = cheerio.load(response.data); // Parse the document body
-      this.getPageLinks($);
-      return this.crawl();
-    } catch (error) {
-      console.log('error', error);
-      return this.crawl();
-    }
-    // .catch(async error => {
-    //   // may be page not found but keep crawling
-    //   console.log(error);
-    //   return this.crawl();
-    // });
+    return new Promise((resolve, reject) => {
+      request(url, (error, response, body) => {
+        // in addition to parsing the value, deal with possible errors
+        if (error) return reject(error);
+        try {
+          if (response.statusCode !== 200) {
+            resolve(this.crawl());
+          }
+          const $ = cheerio.load(body); // Parse the document body
+          this.getPageLinks($);
+          resolve(this.crawl());
+        } catch (e) {
+          reject(e);
+        }
+      });
+    });
   }
-  // async visitPage(url) {
-  //   this.pagesVisited[url] = true; //making sure page is visited
-  //   this.numPagesVisited++;
-
-  //   return new Promise((resolve, reject) => {
-  //     request(url, (error, response, body) => {
-  //       // in addition to parsing the value, deal with possible errors
-  //       if (error) return reject(error);
-  //       try {
-  //         if (response.statusCode !== 200) {
-  //           resolve(this.crawl());
-  //         }
-  //         const $ = cheerio.load(body); // Parse the document body
-  //         this.getPageLinks($);
-  //         resolve(this.crawl());
-  //       } catch (e) {
-  //         reject(e);
-  //       }
-  //     });
-  //   });
-  // }
 
   getPageLinks($) {
     const visitedList = Object.keys(this.pagesVisited);
