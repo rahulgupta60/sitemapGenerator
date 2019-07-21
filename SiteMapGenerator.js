@@ -30,11 +30,11 @@ class SiteMapGenerator {
     const visitedList = Object.keys(this.pagesVisited);
     const output = {
       siteMapResponse: [...visitedList, ...this.pagesToVisit],
-      pagesVisited: this.pagesVisited,
-      pagesToVisit: this.pagesToVisit,
+      pagesVisited: ...this.pagesVisited,
+      pagesToVisit: ...this.pagesToVisit,
     };
-    // this.pagesVisited = {};
-    // this.pagesToVisit = [];
+    this.pagesVisited = {};
+    this.pagesToVisit = [];
     return output;
   }
 
