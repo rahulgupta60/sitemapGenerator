@@ -10,21 +10,23 @@ class SiteMapGenerator {
     this.numPagesVisited = 0;
     this.pagesToVisit = [];
     this.finalResult = [];
-    // this.baseUrl = '';
-    this.baseUrl = 'https://wiprodigital.com';
+    this.baseUrl = '';
+    // this.baseUrl = 'https://wiprodigital.com';
+    // this.baseUrl = 'http://localhost:5500/';
   }
 
   async getData(START_URL) {
-    const url = new URL(START_URL);
-    // this.baseUrl = url.protocol + '//' + url.hostname;
-    // this.pagesToVisit.push(START_URL);
-    this.pagesToVisit.push(this.baseUrl);
+    const cleanUrl = this.stripTrailingSlash(START_URL);
+    // const cleanUrl = this.baseUrl;
+
+    const url = new URL(cleanUrl);
+    this.baseUrl = url.protocol + '//' + url.hostname;
+    this.pagesToVisit.push(cleanUrl);
     return await this.crawl();
   }
 
   async crawl() {
     if (this.numPagesVisited >= MAX_PAGES_TO_VISIT) {
-      console.log('Reached max limit of number of pages to visit.');
       return {
         pagesVisited: this.pagesVisited,
         pagesToVisit: this.pagesToVisit,
@@ -46,8 +48,9 @@ class SiteMapGenerator {
     this.numPagesVisited++;
 
     // Make the request
-    console.log('Visiting page ' + url);
+
     return new Promise((resolve, reject) => {
+      console.log('TCL: SiteMapGenerator -> visitPage -> url', url);
       request(url, (error, response, body) => {
         // in addition to parsing the value, deal with possible errors
         if (error) return reject(error);
@@ -68,15 +71,40 @@ class SiteMapGenerator {
       });
     });
   }
+  domainValidate({ hostname }) {
+    // assuming it is relative link always true
+    if (hostname) {
+      const x = this.baseUrl.search(hostname) > 0 ? true : false;
 
+      return x;
+    }
+    return true;
+  }
+  stripTrailingSlash(str) {
+    return str.replace(/^\/|\/$/g, '');
+  }
+  filterOtherProtocaLL({ protocol }) {
+    console.log('protocol', protocol);
+    const x = !['mailto:', 'ftp:'].filter(x => x == protocol).length;
+    console.log('flag', x);
+    return x;
+  }
   collectInternalLinks($) {
     //firer for other domain
     const pagesVisited = Object.entries(this.pagesVisited);
     const links = $('a');
     $(links).each((i, link) => {
       const url = new URL($(link).attr('href'));
-      const newPagesToVisit = this.baseUrl + url.pathname;
-      !this.pagesToVisit.includes(newPagesToVisit) &&
+      console.log('herf', $(link).attr('href'));
+
+      const flag = this.domainValidate(url) && this.filterOtherProtocaLL(url);
+
+      const newPagesToVisit =
+        this.baseUrl + '/' + this.stripTrailingSlash(url.pathname);
+      // console.log(' newPagesToVisit', newPagesToVisit);
+
+      flag &&
+        !this.pagesToVisit.includes(newPagesToVisit) &&
         !pagesVisited.includes(newPagesToVisit) &&
         this.pagesToVisit.push(newPagesToVisit);
     });
