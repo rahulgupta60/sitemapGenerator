@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const URL = require('url-parse');
 
 // const MAX_PAGES_TO_VISIT = 10;
-const MAX_PAGES_TO_VISIT = 2;
+const MAX_PAGES_TO_VISIT = 1;
 class SiteMapGenerator {
   constructor() {
     this.pagesVisited = {};
