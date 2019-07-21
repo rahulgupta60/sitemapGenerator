@@ -84,9 +84,9 @@ class SiteMapGenerator {
       );
 
       cleanUrl && // if only slash contain url is fail
-      linkValidatorFlag && // check link is proper
-      !this.pagesToVisit.includes(newLink) && // check link is already is exist in pagesToVisit list
-      !visitedList.includes(newLink) && // check link is already is exist in visitedList list
+      linkValidatorFlag && // check newLink is proper
+      !this.pagesToVisit.includes(newLink) && // check newLink is already is exist in pagesToVisit list
+      !visitedList.includes(newLink) && // check newLink is already is exist in visitedList list
         this.pagesToVisit.push(newLink); // finally push the data in pagesToVisit list
     });
   }
