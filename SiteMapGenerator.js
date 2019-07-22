@@ -5,7 +5,7 @@ const cheerio = require('cheerio');
 
 const { stripTrailingSlash, linkValidator } = require('./utils');
 
-const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 2;
+const MAX_PAGES_TO_VISIT = process.env.MAX_PAGE_VISIT || 5;
 const NOT_ALLOWED_PROTOCOL = ['mailto:', 'ftp:'];
 
 class SiteMapGenerator {
@@ -39,7 +39,6 @@ class SiteMapGenerator {
     }
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
     if (nextPage) {
-      console.log('TCL: SiteMapGenerator -> crawl -> nextPage', nextPage);
       await this.visitPage(nextPage);
     }
     return this.response();
