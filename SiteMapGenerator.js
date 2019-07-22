@@ -38,17 +38,9 @@ class SiteMapGenerator {
       return this.response();
     }
     const nextPage = this.pagesToVisit.length && this.pagesToVisit.pop();
-    if (!!nextPage) {
-      // console.log('TCL: SiteMapGenerator -> crawl -> nextPage', nextPage);
-      // console.log(
-      //   'TCL: SiteMapGenerator -> crawl -> nextPage in this.pagesVisited',
-      //   nextPage in this.pagesVisited,
-      // );
-      // if (nextPage in this.pagesVisited) {
-      //   this.crawl();
-      // } else {
+    if (nextPage) {
+      console.log('TCL: SiteMapGenerator -> crawl -> nextPage', nextPage);
       await this.visitPage(nextPage);
-      // }
     }
     return this.response();
   }
